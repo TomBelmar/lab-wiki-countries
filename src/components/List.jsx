@@ -7,7 +7,7 @@ function List() {
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  //function to call the api and set the state
+ 
   const getCountries = async () => {
     try {
       let response = await axios.get(apiURL);

@@ -35,7 +35,6 @@ function App() {
             loading ? <h1>Loading</h1> : <CountriesList countries={countries} />
           }
         />
-
         <Route
           path="/countries/:id"
           element={
