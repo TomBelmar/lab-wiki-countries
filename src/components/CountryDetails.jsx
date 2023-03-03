@@ -1,53 +1,56 @@
-import { useParams, Link } from 'react-router-dom';
+import axios from 'axios';
+ import React, { useState, useEffect } from 'react';
+ import { Link, useParams } from 'react-router-dom';
 
-function CountryDetails({ countries }) {
-  const { id } = useParams();
-  const [country] = countries.filter((el) => el.alpha3Code === id);
+ function CountryDetails() {
+   const [oneCountry, setCountry] = useState(null);
+   const { countryId } = useParams();
 
-  return (
-    <div className="container">
-      <div className="row">
-        <div className="col-9">
-          <h1>
-            <img
-              src={`https://flagpedia.net/data/flags/icon/72x54/${country.alpha2Code.toLowerCase()}.png`}
-              alt="country"
-            />{' '}
-            {country.name.official}
-          </h1>
-          <table className="table">
-            <thead></thead>
-            <tbody>
-              <tr>
-                <td>Capital</td>
-                <td>{country.capital[0]}</td>
-              </tr>
-              <tr>
-                <td>Area</td>
-                <td>
-                  {country.area} km
-                  <sup>2</sup>
-                </td>
-              </tr>
-              <tr>
-                <td>Borders</td>
-                <td>
-                  <ul>
-                    {country.borders.map((border, i) => (
-                      <li>
-                        <Link to={`/country/${border}`}>{border}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <Link to="/">Countries List</Link>
-        </div>
-      </div>
-    </div>
-  );
-}
+   useEffect(() => {
+     axios
+       .get(`https://ih-countries-api.herokuapp.com/countries/${countryId}`)
+       .then((res) => {
+         setCountry(res.data);
+       })
+       .catch((err) => console.log(err));
+   }, [countryId]);
 
-export default CountryDetails;
+   return (
+     <>
+       {oneCountry && (
+         <div className="myCard">
+           <img
+             src={`https://flagpedia.net/data/flags/icon/72x54/${oneCountry.alpha2Code.toLowerCase()}.png`}
+             alt={oneCountry.name.common}
+           />
+           <h2>{oneCountry.name.common}</h2>
+
+           <div className="divider" />
+
+           <p>Capital: {oneCountry.capital}</p>
+           <p>Area: {oneCountry.area}</p>
+
+           <div className="divider" />
+
+           <div className="cRow">
+             <div className="bordersM">
+               <p>Borders:</p>
+             </div>
+
+             <div>
+               {oneCountry.borders.map((el) => {
+                 return (
+                   <Link to={`/${el}`}>
+                     <p>{el}</p>
+                   </Link>
+                 );
+               })}
+             </div>
+           </div>
+         </div>
+       )}
+     </>
+   );
+ }
+
+ export default CountryDetails;

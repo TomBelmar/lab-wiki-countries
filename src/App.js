@@ -1,52 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom'; 
-import axios from 'axios';
-import CountriesList from './components/CountriesList'; 
-import CountryDetails from './components/CountryDetails';  
-import Header from './components/Header';
+import './App.css';
 
+ import React, { useState, useEffect } from 'react';
+ import axios from 'axios';
 
-function App() {
-  const [countries, setCountries] = useState([]);
-  const [loading, setLoading] = useState(true);
+ import Navbar from './components/Navbar';
+ import CountriesList from './components/CountriesList';
+ import CountryDetails from './components/CountryDetails';
 
-  const getFromApi = async () => {
-    try {
-      const response = await axios.get(
-        `https://ih-countries-api.herokuapp.com/countries`
-      );
-      setCountries(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+ import { Routes, Route } from 'react-router-dom';
 
-  useEffect(() => {
-    getFromApi();
-  }, []); 
-  <div>
-      <Header />
+ function App() {
+   const [countries, setCountries] = useState([]);
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            loading ? <h1>Loading</h1> : <CountriesList countries={countries} />
-          }
-        />
-        <Route
-          path="/countries/:id"
-          element={
-            loading ? (
-              <h1>Loading Selected</h1>
-            ) : (
-              <CountryDetails countries={countries} />
-            )
-          }
-        />
-      </Routes>
-    </div>
-}
+   useEffect(() => {
+     axios
+       .get(`https://ih-countries-api.herokuapp.com/countries`)
+       .then((res) => {
+         setCountries(
+           res.data.sort((a, b) => a.name.common.localeCompare(b.name.common))
+         );
+       })
+       .catch((err) => console.log(err));
+   }, []);
 
-export default App;
+   return (
+     <div className="App">
+       <nav>
+         <Navbar />
+       </nav>
+       <div className="appBody">
+         <div className="countryList">
+           <CountriesList countries={countries} />
+         </div>
+
+         <div className="countryDetails">
+           <Routes>
+             <Route path="/:countryId" element={<CountryDetails />} />
+           </Routes>
+         </div>
+       </div>
+     </div>
+   );
+ }
+
+ export default App;
